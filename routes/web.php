@@ -15,15 +15,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-//    return view('welcome');
-    $data = [
-        'title' => 'Hi, I hope you like this title',
-        'content' => 'This mail is test mail'
-    ];
-
-    Mail::send('email.test', $data, function ($message) {
-        $message->to('niky@gmail.com', 'Veronika')->subject('Hello nana');
-    });
+    return view('welcome');
+//    $data = [
+//        'title' => 'Hi, I hope you like this title',
+//        'content' => 'This mail is test mail'
+//    ];
+//
+//    Mail::send('email.test', $data, function ($message) {
+//        $message->to('niky@gmail.com', 'Veronika')->subject('Hello nana');
+//    });
 
 
 });
