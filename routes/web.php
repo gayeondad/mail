@@ -1,10 +1,15 @@
 <?php
 
 use App\Http\Controllers\PostsController;
+use App\Models\Comment;
 use App\Models\Country;
+use App\Models\Image;
 use App\Models\Phone;
+use App\Models\Post;
 use App\Models\Role;
+use App\Models\Tag;
 use App\Models\User;
+use App\Models\Video;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -171,7 +176,6 @@ Route::get('/updManytomany/{uid}/{rid}', function ($uid, $rid) {
     return 'fail';
 });
 
-
 Route::get('/delManytomany/{uid}', function ($uid) {
     $user = User::findOrFail($uid);
     foreach ($user->role as $role) {
@@ -196,5 +200,127 @@ Route::get('/detach/{uid}/{rid}', function ($uid, $rid) {
 Route::get('/sync/{uid}', function ($uid) {
    $user = User::findOrFail($uid);
    $user->role()->sync([1,2]);  // 주어진 배열에 포함되어 있지 않는 ID는 중간 테이블에서 제거되고 배열에 포함된 ID들만 중간 테이블에 남는다.
+});
+
+
+Route::get('/insOnetomany2/{id}', function ($id) {
+    $user = User::findOrFail($id);
+    $post = new Post(['title' => 'third title', 'content' => 'This is a Third sentence']);
+    if ($user->post()->save($post)) {
+        return 'ins ok';
+    }
+    return 'fail';
+});
+
+Route::get('/insMorphone/{id}/{type}', function ($id, $type) {
+    if ($type == 'user') $obj = User::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+//    $user->image()->create(['path' => '/img/face.jpg']);
+    $img = new Image(['path' => '/img/photo4.png']);
+    if ($obj->image()->save($img)) return 'ins ok';
+    return 'fail';
+});
+
+Route::get('/selMorphone/{id}/{type}', function ($id, $type) {
+   if ($type == 'user') $obj = User::findOrFail($id);
+   elseif ($type == 'post') $obj = Post::findOrFail($id);
+   foreach ($obj->image()->get() as $img) {
+       return $img->path;
+   }
+//   return $obj->image()->get();
+});
+
+Route::get('/updMorphone/{id}/{type}', function ($id, $type) {
+    if ($type == 'user') $obj = User::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+    $row = $obj->image()->where('id', '=', 1)->first();
+    $row->path = '/img/changedFace.jpg';
+    if ($row->save()) return 'upd ok';
+    return $row;
+});
+
+Route::get('/delMorphone/{id}/{type}', function ($id, $type) {
+    if ($type == 'user') $obj = User::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+    $img = $obj->image()->where('images.path', 'like', '%photo%')->first();
+    if ($img->delete()) return 'del ok';
+    return 'fail';
+});
+
+Route::get('/insMorphmany/{id}/{type}', function ($id, $type) {
+    if ($type == 'post') $obj = Post::findOrFail($id);
+    elseif ($type == 'video') $obj = Video::findOrFail($id);
+    $cmnt = new Comment(['body' => 'this comment id first']);
+    if ($obj->comment()->save($cmnt)) return 'ins ok';
+    return 'fail';
+});
+
+/*
+Route::get('/insMorphmany2', function () {
+//   $video = Video::create(['name' => 'hungger game.avi']);
+   $video = new Video(['name' => 'hungger game3.avi']);
+   $video->save();
+});
+*/
+
+Route::get('/selMorphmany/{id}/{type}', function ($id, $type) {
+    if ($type == 'video') $obj = Video::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+    foreach ($obj->comment()->get() as $comment) {
+        echo $comment->body . '<br />';
+    }
+});
+
+Route::get('/updMorphmany/{id}/{type}', function ($id, $type) {
+    if ($type == 'video') $obj = Video::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+    $comment = $obj->comment()->where('comments.id', '=', 1)->first();
+    $comment->body = '한글 댓글로 업데이트 함...';
+    if ($comment->save()) return 'upd ok';
+    return 'fail';
+});
+
+Route::get('/delMorphmany/{id}/{type}', function ($id, $type) {
+    if ($type == 'video') $obj = Video::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+    $comment = $obj->comment()->whereId(2)->first();
+    if ($comment->delete()) return 'del ok';
+    return $comment;
+});
+
+Route::get('/insMorphtomany/{id}/{type}', function ($id, $type) {
+    if ($type == 'post') $obj = Post::findOrFail($id);
+    elseif ($type == 'video') $obj = Video::findOrFail($id);
+    $tag = new Tag(['name' => 'video tagging ...']);
+    if ($obj->tag()->save($tag)) return 'ins ok';
+    return 'fail';
+});
+
+Route::get('/selMorphtomany/{id}/{type}', function ($id, $type) {
+    if ($type == 'video') $obj = Video::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+    foreach ($obj->tag()->get() as $tag) {
+        echo $tag->name . '<br />';
+    }
+});
+
+Route::get('/updMorphtomany/{id}/{type}', function ($id, $type) {
+    if ($type == 'video') $obj = Video::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+    $tag = $obj->tag()->where('tags.id', '=', 1)->first();
+    $tag->name = '태그 데이터';
+    if ($tag->save()) return 'upd ok';
+    return 'fail';
+});
+
+Route::get('/delMorphtomany/{id}/{type}', function ($id, $type) {
+    if ($type == 'video') $obj = Video::findOrFail($id);
+    elseif ($type == 'post') $obj = Post::findOrFail($id);
+    $tag = $obj->tag()->where('name', 'like', '%video%')->get();
+    foreach ($tag as $tg) {
+        echo $tg->name;
+        if ($tg->delete()) echo ' deleted!!<br />';     // tag 데이터는 삭제되는데 taggable 데이터는 남아있다...
+        else echo ' fail<br />';
+    }
 });
 

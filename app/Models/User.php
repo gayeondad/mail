@@ -46,7 +46,8 @@ class User extends Authenticatable
 
     public function phone()
     {
-        return $this->hasOne('App\Models\Phone');
+//        return $this->hasOne('App\Models\Phone');
+        return $this->hasOne(Phone::class);
     }
 
     public function country()
@@ -57,5 +58,15 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsToMany('App\Models\Role');
+    }
+
+    public function post()
+    {
+        return $this->hasMany('App\Models\Post');
+    }
+
+    public function image()
+    {
+        return $this->morphOne('App\Models\Image', 'imageable');
     }
 }
