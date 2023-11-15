@@ -57,7 +57,7 @@ class User extends Authenticatable
 
     public function role()
     {
-        return $this->belongsToMany('App\Models\Role');
+        return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
     public function post()
