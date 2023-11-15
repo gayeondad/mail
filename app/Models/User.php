@@ -69,4 +69,15 @@ class User extends Authenticatable
     {
         return $this->morphOne('App\Models\Image', 'imageable');
     }
+
+    public function getNameAttribute($value)
+    {
+        return ucfirst($value);     // Accessors
+    }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucfirst($value);    // 저장 시 적용 (Mutators)
+    }
+
 }

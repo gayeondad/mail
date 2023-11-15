@@ -2,11 +2,18 @@
 
 @section('content')
     <h1>Create Post</h1>
-    <form method="post" action="/posts">
+    <form method="post" action="/posts" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="user_id" value="1" />
-        <input type="text" name="title" placeholder="Enter title" />
-        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+        <div class="form-group">
+            <input type="text" name="title" placeholder="Enter title" />
+        </div>
+        <div class="form-group">
+            <textarea name="content" id="content" cols="30" rows="10"></textarea>
+        </div>
+        <div class="form-group">
+            <input type="file" name="ftu" />
+        </div>
         <input type="submit" value="저장" />
     </form>
     @if (count($errors) > 0)

@@ -14,7 +14,10 @@ class PostsController extends Controller
     public function index()
     {
         //
-        $posts = Post::all();
+        // $posts = Post::all();
+        $posts = Post::latest()->get();
+        // $posts = Post::orderBy('id', 'desc')->get();
+        // return $posts;
         return view('posts.index', compact('posts'));
     }
 
@@ -38,12 +41,26 @@ class PostsController extends Controller
         //     'content' => 'required'
         // ]);
         // Request 대신 생성한 CreatePostRequest 사용인 경우 validate 는 CreatePostRequest 의 rule 적용
+        
+        // $file = $request->file('ftu');
+        // // var_dump($file);
+        // echo $file->getClientOriginalName();
+        // echo '<br />';
+        // echo $file->getClientSize();    // window라서 그런가.. size 항목이 없어서 에러 발생 (유닉스에선 될려나??)
 
-        if (Post::create($request->all())) return redirect('/posts');
+        $input = $request->all();
+        if ($file = $request->file('ftu')) {
+            $name = $file->getClientOriginalName();
+            $file->move('images', $name);
+            $input['path'] = $name;
+        }
+        // if (Post::create($request->all())) return redirect('/posts');
+        if (Post::create($input)) return redirect('/posts');
         return 'fail';
-//        return $request->all();
-//        return $request->get('title');
-//        return $request->title;
+        // return $request->all();
+        // return $request->get('title');
+        // return $request->title;
+        
     }
 
     /**

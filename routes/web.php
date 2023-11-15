@@ -13,6 +13,7 @@ use App\Models\Video;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,30 @@ Route::get('/contact', function () {
 
 Route::group(['middleware' => 'web'], function () {
     Route::resource('/posts', PostsController::class);
+
+    Route::get('/dates', function () {
+        $date = new DateTime('+1 week');
+        echo $date->format('Y-m-d');
+        echo '<br />';
+        echo Carbon::now()->addDays(10)->diffForHumans();
+        echo '<br />';
+        echo Carbon::now()->subMonths(3)->diffForHumans();
+        echo '<br />';
+        echo Carbon::now()->yesterday()->diffForHumans();
+        echo '<br />';
+    });
+
+    Route::get('/getname/{id}', function ($id) {
+        $user = User::findOrFail($id);
+        return $user->name;
+    });
+
+    Route::get('/setname/{id}/{name}', function ($id, $name) {
+        $user = User::findOrFail($id);
+        $user->name = $name;
+        if ($user->save()) return 'set ok';
+        return 'fail';
+    });
 
 });
 
